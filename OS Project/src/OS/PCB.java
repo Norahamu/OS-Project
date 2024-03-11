@@ -1,4 +1,4 @@
-package os.project;
+package OS;
 public class PCB {
     private String processId;
     private int priority;

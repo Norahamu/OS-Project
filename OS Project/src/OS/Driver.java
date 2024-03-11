@@ -1,4 +1,4 @@
-package os.project;
+    package OS;
 
 import java.io.FileWriter;
 import java.io.IOException;
