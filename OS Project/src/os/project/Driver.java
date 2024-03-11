@@ -1,12 +1,18 @@
 package os.project;
+
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
+import java.util.Scanner;
 
 public class Driver {
-    private static Queue Q1 = new Queue();
-    private static Queue Q2 = new Queue();
-    private static List<PCB> completedProcesses = new ArrayList<>();
+    private static final int MAX_PROCESSES = 100; // random يارا غيريها زي ما تبغين
+    private static final int MAX_COMPLETED_PROCESSES = 200;
+    private static PCB[] q1 = new PCB[MAX_PROCESSES];
+    private static PCB[] q2 = new PCB[MAX_PROCESSES];
+    private static PCB[] completedProcesses = new PCB[MAX_COMPLETED_PROCESSES];
+    private static int q1Size = 0;
+    private static int q2Size = 0;
+    private static int completedProcessCount = 0;
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -35,11 +41,11 @@ public class Driver {
         scanner.close();
     }
 
-   private static void enterProcesses(Scanner scanner) {
+    private static void enterProcesses(Scanner scanner) {
         System.out.print("Enter the total number of processes: ");
         int numOfProcesses = scanner.nextInt();
-        for (int i = 1; i <= numOfProcesses; i++) {
-            System.out.println("Enter process details " + i);
+        for (int i = 0; i < numOfProcesses; i++) {
+            System.out.println("Enter process details " + (i + 1));
             System.out.print("Priority (1 or 2): ");
             int priority = scanner.nextInt();
             System.out.print("Arrival time: ");
@@ -47,100 +53,99 @@ public class Driver {
             System.out.print("CPU burst time: ");
             int cpuBurst = scanner.nextInt();
 
-            PCB process = new PCB(i, priority, arrivalTime, cpuBurst);
-            if (priority == 1) {
-                Q1.enqueue(process);
-            } else if (priority == 2) {
-                Q2.enqueue(process);
+            PCB process = new PCB(i + 1, priority, arrivalTime, cpuBurst);
+            if (priority == 1 && q1Size < MAX_PROCESSES) {
+                q1[q1Size++] = process;
+            } else if (priority == 2 && q2Size < MAX_PROCESSES) {
+                q2[q2Size++] = process;
             } else {
-                System.out.println("Invalid priority, please enter 1 or 2.");
-                i--; 
+                System.out.println("Invalid priority or queue is full, enter 1 or 2 and ensure queue is not full.");
+                i--;
             }
         }
     }
 
-private static void displaySchedulingReport() {
+    private static void displaySchedulingReport() {
         PCB process;
-        int currentTime = 0;//cuurentTime is progression of time 
+        int currentTime = 0;
         int totalTurnaroundTime = 0;
         int totalWaitingTime = 0;
         int totalResponseTime = 0;
         int processesCount = 0;
-        String averageReport;
-        
-        String schedulingOrder = "Scheduling Order: [";
-        while ((process = getNextProcess(Q1, Q2)) != null) {
-             if (process.getArrivalTime() > currentTime) {
+        StringBuilder schedulingOrder = new StringBuilder("Scheduling Order: [");
+
+        while ((process = getNextProcess()) != null) {
+            if (process.getArrivalTime() > currentTime) {
                 currentTime = process.getArrivalTime();
             }
             process.setStartTime(currentTime);
             process.setTerminationTime(currentTime + process.getCpuBurst());
-            process.setTurnAroundTime(process.getTerminationTime() - process.getArrivalTime());
-            process.setWaitingTime(process.getTurnAroundTime() - process.getCpuBurst());
-            process.setResponseTime(process.getStartTime() - process.getArrivalTime());
-         //update
+            process.calculateMetrics();
+
+            // Update aggregated values for reporting
             totalTurnaroundTime += process.getTurnAroundTime();
             totalWaitingTime += process.getWaitingTime();
             totalResponseTime += process.getResponseTime();
             processesCount++;
-            completedProcesses.add(process);
-            schedulingOrder += "P" + process.getProcessId() + " | ";
-             currentTime = process.getTerminationTime();
+
+            // Save completed process
+            if (completedProcessCount < MAX_COMPLETED_PROCESSES) {
+                completedProcesses[completedProcessCount++] = process;
+            } else {
+                System.out.println("Maximum number of completed processes reached");
+                break;
+            }
+
+            schedulingOrder.append("P").append(process.getProcessId()).append(" | ");
+            currentTime = process.getTerminationTime();
         }
-        
-          if (schedulingOrder.endsWith(" | ")) {
-            schedulingOrder = schedulingOrder.substring(0, schedulingOrder.length() - 3);  //remove last |
+
+        if (schedulingOrder.toString().endsWith(" | ")) {
+            schedulingOrder = new StringBuilder(schedulingOrder.substring(0, schedulingOrder.length() - 3));
         }
-        schedulingOrder += "]";
-        //averages
+        schedulingOrder.append("]");
+
+        // Calculate averages
         double avgTurnaroundTime = (double) totalTurnaroundTime / processesCount;
         double avgWaitingTime = (double) totalWaitingTime / processesCount;
         double avgResponseTime = (double) totalResponseTime / processesCount;
-        //write report to the file 
-         try (FileWriter writer = new FileWriter("schedulingReport.txt")) {
-            writer.write(schedulingOrder + "\n");
+
+        // Write report 
+        try (FileWriter writer = new FileWriter("schedulingReport.txt")) {
+            writer.write(schedulingOrder.toString() + "\n");
+            writer.write("Average Turnaround Time: " + avgTurnaroundTime + "\n");
+            writer.write("Average Waiting Time: " + avgWaitingTime + "\n");
+            writer.write("Average Response Time: " + avgResponseTime + "\n");
+            writer.flush();
+
+
             System.out.println(schedulingOrder);
-
-            for (PCB completedProcess : completedProcesses) {
-                String report = generateProcessReport(completedProcess);
-                writer.write(report + "\n");
-                System.out.println(report);
-            }
-
-            
-            averageReport = String.format("Average Turnaround Time: %.2f\n", avgTurnaroundTime) +
-                            String.format("Average Waiting Time: %.2f\n", avgWaitingTime) +
-                            String.format("Average Response Time: %.2f\n", avgResponseTime);
-
-            writer.write(averageReport);
-            System.out.print(averageReport);
-
+            System.out.println("Average Turnaround Time: " + avgTurnaroundTime);
+            System.out.println("Average Waiting Time: " + avgWaitingTime);
+            System.out.println("Average Response Time: " + avgResponseTime);
         } catch (IOException e) {
-            System.out.println("Error occurred");
-            e.printStackTrace();
+            System.out.println("An error occurred while writing the scheduling report: " + e.getMessage());
         }
-}  
-
- private static PCB getNextProcess(Queue q1, Queue q2) {
-      if (!q1.isEmpty()) {
-        return q1.dequeue();
-    } else if (!q2.isEmpty()) {
-        return q2.dequeue();
     }
-    return null; 
- }
- private static String generateProcessReport(PCB process) {
-    return "Process ID: " + process.getProcessId() +
-           ", Priority: " + process.getPriority() +
-           ", Arrival Time: " + process.getArrivalTime() +
-           ", CPU Burst: " + process.getCpuBurst() +
-           ", Start Time: " + process.getStartTime() +
-           ", Termination Time: " + process.getTerminationTime() +
-           ", Turnaround Time: " + process.getTurnAroundTime() +
-           ", Waiting Time: " + process.getWaitingTime() +
-           ", Response Time: " + process.getResponseTime();
+
+    private static PCB getNextProcess() {
+        if (q1Size > 0) {
+            return dequeue(q1, --q1Size);
+        } else if (q2Size > 0) {
+            return dequeue(q2, --q2Size);
+        }
+        return null;
+    }
+
+    private static PCB dequeue(PCB[] queue, int size) {
+        PCB process = queue[0];
+         for (int i = 0; i < size; i++) {
+        queue[i] = queue[i + 1];
+    }
+         if (size < queue.length) {
+        queue[size] = null;
+    }
+    
+    return process;
+    }
 }
-
- 
- }
-
