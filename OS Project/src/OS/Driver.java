@@ -45,7 +45,7 @@ public class Driver {
         System.out.print("Enter the total number of processes: ");
         int numOfProcesses = scanner.nextInt();
         for (int i = 0; i < numOfProcesses; i++) {
-            System.out.println("Enter process details " + (i + 1));
+            System.out.println("Enter process information " + (i + 1));
             System.out.print("Priority (1 or 2): ");
             int priority = scanner.nextInt();
             System.out.print("Arrival time: ");
