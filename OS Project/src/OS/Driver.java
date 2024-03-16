@@ -5,10 +5,10 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class Driver {
-    private static final int MAX_PROCESSES = 100; // random يارا غيريها زي ما تبغين
+    private static  int MAX_PROCESSES ;
     private static final int MAX_COMPLETED_PROCESSES = 200;
-    private static PCB[] q1 = new PCB[MAX_PROCESSES];
-    private static PCB[] q2 = new PCB[MAX_PROCESSES];
+    private static PCB[] q1 ;
+    private static PCB[] q2 ;
     private static PCB[] completedProcesses = new PCB[MAX_COMPLETED_PROCESSES];
     private static int q1Size = 0;
     private static int q2Size = 0;
@@ -42,9 +42,11 @@ public class Driver {
     }
 
     private static void enterProcesses(Scanner scanner) {
-        System.out.print("Enter the total number of processes: ");
-        int numOfProcesses = scanner.nextInt();
-        for (int i = 0; i < numOfProcesses; i++) {
+       System.out.print("Enter the total number of processes: ");
+         MAX_PROCESSES = scanner.nextInt();
+          q1 = new PCB[MAX_PROCESSES];
+          q2 = new PCB[MAX_PROCESSES];
+        for (int i = 0; i < MAX_PROCESSES; i++) {
             System.out.println("Enter process information " + (i + 1));
             System.out.print("Priority (1 or 2): ");
             int priority = scanner.nextInt();
