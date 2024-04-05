@@ -3,6 +3,9 @@
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
+import java.util.Arrays;
+import java.util.Comparator;
+
 
 public class Driver {
     private static  int MAX_PROCESSES ;
@@ -128,6 +131,51 @@ public class Driver {
         } catch (IOException e) {
             System.out.println("An error occurred while writing the scheduling report: " + e.getMessage());
         }
+
+ // Part 1: Display scheduling order
+    System.out.println("Scheduling Order: " + schedulingOrder);
+
+    // Part 2: Display detailed information about each process
+    System.out.println("Detailed Information:");
+
+    for (int i = 0; i < completedProcessCount; i++) {
+        PCB completedProcess = completedProcesses[i];
+        System.out.println("Process ID: " + completedProcess.getProcessId());
+        System.out.println("Start Time: " + completedProcess.getStartTime());
+        System.out.println("Termination Time: " + completedProcess.getTerminationTime());
+        System.out.println("CPU Burst: " + completedProcess.getCpuBurst());
+        System.out.println("Turnaround Time: " + completedProcess.getTurnAroundTime());
+        System.out.println("Waiting Time: " + completedProcess.getWaitingTime());
+        System.out.println("Response Time: " + completedProcess.getResponseTime());
+        System.out.println();
+    }
+
+    // Part 3: Display different scheduling criteria
+    System.out.println("Different Scheduling Criteria:");
+
+    // Sort completed processes by turnaround time
+    Arrays.sort(completedProcesses, 0, completedProcessCount, Comparator.comparingInt(PCB::getTurnAroundTime));
+    System.out.println("Scheduling by Turnaround Time:");
+    for (int i = 0; i < completedProcessCount; i++) {
+        System.out.println(completedProcesses[i]);
+    }
+    System.out.println();
+
+    // Sort completed processes by waiting time
+    Arrays.sort(completedProcesses, 0, completedProcessCount, Comparator.comparingInt(PCB::getWaitingTime));
+    System.out.println("Scheduling by Waiting Time:");
+    for (int i = 0; i < completedProcessCount; i++) {
+        System.out.println(completedProcesses[i]);
+    }
+    System.out.println();
+
+    // Sort completed processes by response time
+    Arrays.sort(completedProcesses, 0, completedProcessCount, Comparator.comparingInt(PCB::getResponseTime));
+    System.out.println("Scheduling by Response Time:");
+    for (int i = 0; i < completedProcessCount; i++) {
+        System.out.println(completedProcesses[i]);
+    }
+
     }
 
     private static PCB getNextProcess() {
