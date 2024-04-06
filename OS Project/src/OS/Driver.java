@@ -11,7 +11,7 @@ public class Driver {
     private static  int MAX_PROCESSES ;
     private static PCB[] q1 ;
     private static PCB[] q2 ;
-    private static PCB[] completedProcesses=new PCB[MAX_PROCESSES];
+   private static PCB[] completedProcesses=new PCB[MAX_PROCESSES];
     private static int q1Size = 0;
     private static int q2Size = 0;
     private static int completedProcessCount = 0;
@@ -93,6 +93,7 @@ public class Driver {
             processesCount++;
      
             // Save completed process
+            
             if (completedProcessCount < MAX_PROCESSES) {
                 completedProcesses[completedProcessCount++] = process;
             } else {
@@ -131,7 +132,7 @@ public class Driver {
             System.out.println("An error occurred while writing the scheduling report: " + e.getMessage());
         }
 
- //Display scheduling order
+    //Display scheduling order
     System.out.println("Scheduling Order: " + schedulingOrder);
 
     //Display detailed information about each process
@@ -149,7 +150,7 @@ public class Driver {
         System.out.println();
     }
 
-    // Part 3: Display different scheduling criteria
+    // Display different scheduling criteria
     System.out.println("Different Scheduling Criteria:");
 
     // Sort completed processes by turnaround time
