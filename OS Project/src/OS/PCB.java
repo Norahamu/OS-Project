@@ -1,5 +1,7 @@
 package OS;
 public class PCB {
+
+    private static int MAX_PROCESSES;
     private String processId;
     private int priority;
     private int arrivalTime;
@@ -9,6 +11,7 @@ public class PCB {
     private int turnAroundTime;
     private int waitingTime;
     private int responseTime;   
+   private static PCB[] completedProcesses = new PCB[MAX_PROCESSES]; 
 
     public PCB(int processNumber, int priority, int arrivalTime, int cpuBurst) {
         this.processId = "P" + processNumber;
@@ -103,7 +106,7 @@ public class PCB {
     }
 
     public void calculateMetrics() {
-    this.turnAroundTime = terminationTime - arrivalTime; 
+    turnAroundTime = terminationTime - arrivalTime; 
     waitingTime = turnAroundTime - cpuBurst;
     responseTime = startTime - arrivalTime;
 }

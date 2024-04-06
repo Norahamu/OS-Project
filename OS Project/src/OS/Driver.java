@@ -16,7 +16,7 @@ public class Driver {
     private static int q2Size = 0;
     private static int completedProcessCount = 0;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Scanner scanner = new Scanner(System.in);
         int choice;
         do {
@@ -48,6 +48,7 @@ public class Driver {
          MAX_PROCESSES = scanner.nextInt();
           q1 = new PCB[MAX_PROCESSES];
           q2 = new PCB[MAX_PROCESSES];
+         completedProcesses = new PCB[MAX_PROCESSES];
         for (int i = 0; i < MAX_PROCESSES; i++) {
             System.out.println("Enter process information " + (i + 1));
             System.out.print("Priority (1 or 2): ");
@@ -69,7 +70,7 @@ public class Driver {
         }
     }
 
-    private static void displaySchedulingReport() {
+    private static void displaySchedulingReport() throws IOException {
         PCB process;
         int currentTime = 0;
         int totalTurnaroundTime = 0;
@@ -178,28 +179,29 @@ public class Driver {
 
     }
 
-    private static PCB getNextProcess() {
-        
-        if (q1Size > 0) {
-            return dequeue(q1, --q1Size);
-        } else if (q2Size > 0) {
-            return dequeue(q2, --q2Size);
-        }
-        return null;
+    private static PCB getNextProcess() throws IOException {
+    PCB process = null;
+
+    if (q1Size > 0) {
+        process = dequeue(q1, q1Size--);
+    } else if (q2Size > 0) {
+        process = dequeue(q2, q2Size--);
     }
 
-    private static PCB dequeue(PCB[] queue, int size) {
-        if (size == 0) {
-        return null;}
-        
-        PCB process = queue[0];
-         for (int i = 0; i < size; i++) {
+    return process;
+}
+
+private static PCB dequeue(PCB[] queue, int size) throws IOException {
+    if (size == 0) {
+        throw new IOException("Queue is empty");
+    }
+
+    PCB process = queue[0];
+    for (int i = 0; i < size - 1; i++) {
         queue[i] = queue[i + 1];
     }
-         if (size < queue.length) {
-        queue[size] = null;
-    }
-    
+    queue[size - 1] = null;
+
     return process;
-    }
+}
 }
