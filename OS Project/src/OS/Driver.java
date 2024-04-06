@@ -101,8 +101,7 @@ public class Driver {
                 System.out.println("Maximum number of completed processes reached");
                 break;
             }
-
-            schedulingOrder.append("P").append(process.getProcessId()).append(" | ");
+            schedulingOrder.append(process.getProcessId()).append(" | ");
             currentTime = process.getTerminationTime();
         }
 
