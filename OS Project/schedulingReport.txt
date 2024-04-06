@@ -1,4 +1,4 @@
-Scheduling Order: []
-Average Turnaround Time: 2.0
-Average Waiting Time: 0.0
-Average Response Time: 0.0
+Scheduling Order: [PP1 | PP2]
+Average Turnaround Time: 6.0
+Average Waiting Time: 1.0
+Average Response Time: 1.0

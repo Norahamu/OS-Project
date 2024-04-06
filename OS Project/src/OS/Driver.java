@@ -141,6 +141,7 @@ public class Driver {
 
     for (int i = 0; i < completedProcessCount; i++) {
         PCB completedProcess = completedProcesses[i];
+         if (completedProcess != null) {
         System.out.println("Process ID: " + completedProcess.getProcessId());
         System.out.println("Start Time: " + completedProcess.getStartTime());
         System.out.println("Termination Time: " + completedProcess.getTerminationTime());
@@ -148,7 +149,7 @@ public class Driver {
         System.out.println("Turnaround Time: " + completedProcess.getTurnAroundTime());
         System.out.println("Waiting Time: " + completedProcess.getWaitingTime());
         System.out.println("Response Time: " + completedProcess.getResponseTime());
-        System.out.println();
+        System.out.println();}
     }
 
     // Display different scheduling criteria
