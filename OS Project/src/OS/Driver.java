@@ -9,10 +9,9 @@ import java.util.Comparator;
 
 public class Driver {
     private static  int MAX_PROCESSES ;
-    private static final int MAX_COMPLETED_PROCESSES = 200;
     private static PCB[] q1 ;
     private static PCB[] q2 ;
-    private static PCB[] completedProcesses = new PCB[MAX_COMPLETED_PROCESSES];
+    private static PCB[] completedProcesses=new PCB[MAX_PROCESSES];
     private static int q1Size = 0;
     private static int q2Size = 0;
     private static int completedProcessCount = 0;
@@ -92,9 +91,9 @@ public class Driver {
             totalWaitingTime += process.getWaitingTime();
             totalResponseTime += process.getResponseTime();
             processesCount++;
-
+     
             // Save completed process
-            if (completedProcessCount < MAX_COMPLETED_PROCESSES) {
+            if (completedProcessCount < MAX_PROCESSES) {
                 completedProcesses[completedProcessCount++] = process;
             } else {
                 System.out.println("Maximum number of completed processes reached");
@@ -132,10 +131,10 @@ public class Driver {
             System.out.println("An error occurred while writing the scheduling report: " + e.getMessage());
         }
 
- // Part 1: Display scheduling order
+ //Display scheduling order
     System.out.println("Scheduling Order: " + schedulingOrder);
 
-    // Part 2: Display detailed information about each process
+    //Display detailed information about each process
     System.out.println("Detailed Information:");
 
     for (int i = 0; i < completedProcessCount; i++) {
@@ -179,6 +178,7 @@ public class Driver {
     }
 
     private static PCB getNextProcess() {
+        
         if (q1Size > 0) {
             return dequeue(q1, --q1Size);
         } else if (q2Size > 0) {
@@ -188,6 +188,9 @@ public class Driver {
     }
 
     private static PCB dequeue(PCB[] queue, int size) {
+        if (size == 0) {
+        return null;}
+        
         PCB process = queue[0];
          for (int i = 0; i < size; i++) {
         queue[i] = queue[i + 1];

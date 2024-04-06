@@ -8,10 +8,7 @@ public class PCB {
     private int terminationTime;
     private int turnAroundTime;
     private int waitingTime;
-    private int responseTime;
-    private static final int MAX_COMPLETED_PROCESSES = 100; // yara change it
-    private static PCB[] completedProcesses = new PCB[MAX_COMPLETED_PROCESSES];    
-    private int turnaroundTime;
+    private int responseTime;   
 
     public PCB(int processNumber, int priority, int arrivalTime, int cpuBurst) {
         this.processId = "P" + processNumber;
@@ -106,9 +103,8 @@ public class PCB {
     }
 
     public void calculateMetrics() {
-        turnaroundTime = terminationTime - arrivalTime;
-        waitingTime = turnaroundTime - cpuBurst;
-        responseTime = startTime - arrivalTime;
-    }
-
+    this.turnAroundTime = terminationTime - arrivalTime; 
+    waitingTime = turnAroundTime - cpuBurst;
+    responseTime = startTime - arrivalTime;
+}
 }
